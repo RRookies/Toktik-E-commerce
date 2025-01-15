@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  mysql8:
+    image: mysql:8.0.29
+    restart: always
+    command:
+      - --default_authentication_plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./script/mysql/:/docker-entrypoint-initdb.d/
+    ports:
+      - "13316:3306"
+  redis:
+    image: 'bitnami/redis:7.2'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+  etcd:
+    image: 'bitnami/etcd:3.5'
+    container_name: etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - 12379:2379
+    networks:
+      - etcd-network
+  etcd-keeper:
+    image: evildecay/etcdkeeper
+    container_name: etcd-keeper
+    ports:
+      - "12378:8080"  # 将本地端口 8080 映射到容器的 8080 端口
+    links:
+      - etcd
+    environment:
+      - ETCD_SERVER=http://etcd:2379
+      - ETCD_USER=root  # 如果有需要，可以设置 Etcd 的用户名
+      - ETCD_PASSWORD=root  # 如果有需要，可以设置 Etcd 的密码
+    depends_on:
+      - etcd  # 确保在启动 etcd-keeper 之前，Etcd 服务已经启动
+    networks:
+      - etcd-network
+
+networks:
+  etcd-network:
+    driver: bridge
