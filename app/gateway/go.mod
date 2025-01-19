@@ -1,4 +1,4 @@
-module Tiktok/app/frontend
+module Tiktok/app/gateway
 
 go 1.23.4
 

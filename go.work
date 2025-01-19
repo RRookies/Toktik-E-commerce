@@ -7,5 +7,5 @@ use (
 	app/cart
 	app/order
 	app/checkout
-	app/frontend
+	./app/gateway
 )
