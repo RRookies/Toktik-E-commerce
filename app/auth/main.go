@@ -1,12 +1,12 @@
 package main
 
 import (
-	user "Tiktok/app/user/kitex_gen/user/userservice"
+	auth "Tiktok/app/auth/kitex_gen/auth/authservice"
 	"log"
 )
 
 func main() {
-	svr := user.NewServer(new(UserServiceImpl))
+	svr := auth.NewServer(new(AuthServiceImpl))
 
 	err := svr.Run()
 
