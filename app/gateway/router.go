@@ -9,6 +9,9 @@ func registerRouter(c *server.Hertz) {
 	user := c.Group("/user")
 	handler.UserRouter(user)
 
+	auth := c.Group("/auth")
+	handler.AuthRouter(auth)
+
 	cart := c.Group("/cart")
 	handler.CartRouter(cart)
 
