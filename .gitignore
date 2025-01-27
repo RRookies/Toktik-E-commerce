@@ -8,4 +8,8 @@
 *.out
 
 # Goland config file
-.idea
+.idea/
+.xml
+
+# Logs
+*.log
