@@ -1,0 +1,23 @@
+jwt:
+  key:
+    OYbjBFCx4hHzkH3WMO_z_jj8ViMMd7S_21IK4jpwafY
+
+
+redis:
+  address: "127.0.0.1:6379"
+  username: ""
+  password: ""
+  db: 5
+
+registry:
+  registry_address: 127.0.0.1:8500
+  username: ""
+  password: ""
+
+server_info:
+  port: "50051"
+  etcdTTL: 60
+
+etcd:
+  endpoints:
+    - "localhost:12300"

@@ -1,0 +1,31 @@
+syntax ="proto3";
+
+package userV;
+
+option go_package = "/userV;userV";
+
+service userService{
+  rpc Register(RegisterReq)returns (RegisterResp){}
+  rpc Login(LoginReq)returns (LoginResp){}
+}
+
+message RegisterReq{
+  string username = 1;
+  string nickname = 2;
+  string password = 3;
+  string email = 4;
+}
+
+message RegisterResp{
+  int32 user_id = 1;
+}
+
+message LoginReq{
+  string email = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message LoginResp{
+  int32 user_id = 1;
+}

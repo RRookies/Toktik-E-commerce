@@ -1,0 +1,11 @@
+server_info:
+  port: "50051"
+  etcdTTL: 60
+
+etcd:
+  endpoints:
+    - "localhost:12300"
+
+mysql:
+  dsn:
+    root:root@tcp(localhost:13316)/ToktikEcommerce?charset=utf8mb4&parseTime=True&loc=Local

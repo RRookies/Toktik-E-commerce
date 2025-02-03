@@ -1,0 +1,14 @@
+mysql:
+  addr:
+    127.0.0.1:13316
+  dsn:
+    root:root@tcp(localhost:13316)/ToktikEcommerce?charset=utf8mb4&parseTime=True&loc=Local
+
+etcd:
+  server:
+    addr:
+      127.0.0.1:12300
+
+
+server:
+  port:50052
