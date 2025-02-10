@@ -13,11 +13,11 @@ import (
 )
 
 func main() {
+	initialize.InitiallizeLogger()
 	initialize.InitializeConfig()
 	initialize.InitializeDB()
 	initialize.InitETCD()
-	initialize.InitiallizeLogger()
-	initialize.InitializeSrv()
+	//initialize.InitializeSrv()
 
 	IP := flag.String("ip","0.0.0.0","ip地址")
 	Port := flag.Int("port",0,"端口号")

@@ -1,14 +1,16 @@
 package initialize
 
-import(
-	"github.com/spf13/viper"
+import (
 	"Tiktok/app/order/global"
+
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 func InitializeConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../")
+	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil{
 		panic(err)
@@ -16,4 +18,5 @@ func InitializeConfig() {
 	if err  := viper.Unmarshal(&global.ServerConfig); err != nil{
 		panic(err)
 	}
+	zap.S().Info("配置信息加载成功")
 }

@@ -1,7 +1,6 @@
 package model
 
 import (
-	"Tiktok/app/order/global"
 	"Tiktok/app/order/idl/gen"
 	"fmt"
 	"time"
@@ -39,22 +38,23 @@ type OrderAddress struct {
 
 
 type OrderItem struct {
-	BaseModel
-	OrderItemID   int64  `gorm:"primaryKey;autoIncrement" json:"order_item_id"`
-	OrderID       int64  `gorm:"not null;default:0" json:"order_id"`
-	GoodsID       int64  `gorm:"not null;default:0" json:"goods_id"`
-	GoodsName     string `gorm:"type:varchar(200);not null;default:''" json:"goods_name"`
-	GoodsCoverImg string `gorm:"type:varchar(200);not null;default:''" json:"goods_cover_img"`
-	SellingPrice  int    `gorm:"not null;default:1" json:"selling_price"`
-	GoodsCount    int    `gorm:"not null;default:1" json:"goods_count"`
-
+    BaseModel
+    OrderItemID   int64  `gorm:"primaryKey;autoIncrement" json:"order_item_id"`
+    OrderID       int64  `gorm:"not null;default:0" json:"order_id"`
+    GoodsID       int64  `gorm:"not null;default:0" json:"goods_id"`
+    GoodsName     string `gorm:"type:varchar(200);not null;default:''" json:"goods_name"`
+    GoodsCoverImg string `gorm:"type:varchar(200);not null;default:''" json:"goods_cover_img"`
+    SellingPrice  int    `gorm:"not null;default:1" json:"selling_price"`
+    GoodsCount    int    `gorm:"not null;default:1" json:"goods_count"`
+   
 	Order         Order  `gorm:"foreignKey:OrderID;references:OrderID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-"`
 }
 
 
-func GetOrderList(Userid int64,Pages, Pagesize int) ([]Order,error){
+
+func GetOrderList(db *gorm.DB,Userid int64,Pages, Pagesize int) ([]Order,error){
 	var orderList []Order
-	result := global.DB.Scopes(Paginate(int(Pages), int(Pagesize))).
+	result := db.Scopes(Paginate(int(Pages), int(Pagesize))).
 	Where(Order{UserID: Userid}).Where("is_deleted = ?",0).Find(&orderList)
 	if result.Error != nil {
 		return nil, result.Error
@@ -73,70 +73,75 @@ func GenerateOrderSn(userId int32) string {
 	return orderSn
 }
 
-func CreateOrder(order *gen.PlaceOrderReq) (uint64, error) {
-	orderNO := GenerateOrderSn(int32(order.UserId))
+func CreateOrder(db *gorm.DB, order *gen.PlaceOrderReq) (uint64, error) {
+    orderNO := GenerateOrderSn(int32(order.UserId))
 
-	newAddress := OrderAddress{
-		ProvinceName: order.Address.ProvinceName,
-		CityName:     order.Address.CityName,
-		RegionName:   order.Address.RegionName,
-		DetailAddress: order.Address.DetailAddress,
-	}
+    newAddress := OrderAddress{
+        ProvinceName: order.Address.ProvinceName,
+        CityName:     order.Address.CityName,
+        RegionName:   order.Address.RegionName,
+        DetailAddress: order.Address.DetailAddress,
+    }
 
-	newOrderItems := make([]OrderItem, len(order.Items))
-	for i, item := range order.Items {
-		newOrderItems[i] = OrderItem{
-			GoodsID:     int64(item.ProductsId),
-			SellingPrice: int(item.ProductsPrice),
-			GoodsCount:   int(item.Quantity),
-		}
-	}
+    newOrderItems := make([]OrderItem, len(order.Items))
+    for i, item := range order.Items {
+        newOrderItems[i] = OrderItem{
+            GoodsID:     int64(item.ProductsId),
+            SellingPrice: int(item.ProductsPrice),
+            GoodsCount:   int(item.Quantity),
+        }
+    }
 
-	newOrder := Order{
-		OrderNo:    orderNO,
-		UserID:     int64(order.UserId),
-		TotalPrice: int(order.TotalPrice),
-		Address:    &newAddress,
-		OrderItems: newOrderItems,
-	}
+    newOrder := Order{
+        OrderNo:    orderNO,
+        UserID:     int64(order.UserId),
+        TotalPrice: int(order.TotalPrice),
+        Address:    &newAddress,
+        OrderItems: newOrderItems,
+    }
 
-	var orderID uint64
+    var orderID uint64
 
-	// Using the transaction to ensure atomicity
-	err := global.DB.Transaction(func(tx *gorm.DB) error {
-		// Create the order first
-		if err := tx.Create(&newOrder).Error; err != nil {
-			return err
-		}
+    // 使用事务保证原子性
+    err := db.Transaction(func(tx *gorm.DB) error {
+        // 创建订单
+        if err := tx.Create(&newOrder).Error; err != nil {
+            return err
+        }
 
-		// Create order items
-		if err := tx.Create(&newOrderItems).Error; err != nil {
-			return err
-		}
+        // 创建订单项
+        for i := range newOrderItems {
+            newOrderItems[i].OrderID = newOrder.OrderID
+            if err := tx.Create(&newOrderItems[i]).Error; err != nil {
+                return err
+            }
+        }
 
-		// Set the generated OrderID
-		orderID = uint64(newOrder.OrderID)
+        // 设置生成的 OrderID
+        orderID = uint64(newOrder.OrderID)
 
-		// Create the address (if required by your schema)
-		if err := tx.Create(&newAddress).Error; err != nil {
-			return err
-		}
+        // 创建地址
+        newAddress.OrderID = newOrder.OrderID
+        if err := tx.Create(&newAddress).Error; err != nil {
+            return err
+        }
 
-		return nil
-	})
+        return nil
+    })
 
-	// Return the orderID and any error encountered
-	if err != nil {
-		return 0, err
-	}
+    // 返回 orderID 和可能出现的错误
+    if err != nil {
+        return 0, err
+    }
 
-	return orderID, nil
+    return orderID, nil
 }
 
 
 
-func CancelOrder(orderId uint64) error {
-	result := global.DB.Model(&Order{}).Where("order_id = ?", orderId).Update("is_deleted", 1)
+
+func CancelOrder(db *gorm.DB,orderId uint64) error {
+	result := db.Model(&Order{}).Where("order_id = ?", orderId).Update("is_deleted", 1)
 	if result.Error!= nil {
 		return result.Error
 	}

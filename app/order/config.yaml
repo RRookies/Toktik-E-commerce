@@ -3,9 +3,9 @@ name: order-service
 mysql:
   host: 127.0.0.1
   port: 3306
-  db: order_db
+  db: TOKTIK_COMMERCE
   user: root
-  password: password123
+  password: YZN700563a
 
 etcd:
   endpoints:

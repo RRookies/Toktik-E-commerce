@@ -21,7 +21,7 @@ func (*OrderService) ListOrder(_ context.Context, req *gen.ListOrderReq) (*gen.L
 	var rsp gen.ListOrderResp
 	var err error
 
-	orders,err = model.GetOrderList(int64(req.UserId),int(req.Pages),int(req.Pagesize))
+	orders,err = model.GetOrderList(global.DB,int64(req.UserId),int(req.Pages),int(req.Pagesize))
 	if err != nil {
 		zap.S().Error(err)
 		return nil,err
@@ -91,7 +91,7 @@ func (*OrderService) PlaceOrder(_ context.Context, req *gen.PlaceOrderReq) (*gen
         }
     }
 
-	rsp.Order.OrderId,err = model.CreateOrder(req)
+	rsp.Order.OrderId,err = model.CreateOrder(global.DB,req)
     if err != nil {
         return nil, err
     }
@@ -103,7 +103,7 @@ func CancelOrder(_ context.Context, req *gen.CancelOrderReq) (*gen.CancelOrderRe
 	var rsp gen.CancelOrderResp
 	var err error
 
-    err = model.CancelOrder(uint64(req.OrderId))
+    err = model.CancelOrder(global.DB,uint64(req.OrderId))
     if err!= nil {
         rsp.Success = false
     }
