@@ -8,6 +8,7 @@ service OrderService {
   rpc PlaceOrder(PlaceOrderReq) returns (PlaceOrderResp) {}
   rpc ListOrder(ListOrderReq) returns (ListOrderResp) {}
   rpc MarkOrderPaid(MarkOrderPaidReq) returns (MarkOrderPaidResp) {}
+  rpc CancelOrder(CancelOrderReq) returns (CancelOrderResp){}
 }
 
 message Address {
@@ -25,11 +26,10 @@ message OrderItem {
 
 message PlaceOrderReq {
   uint64 user_id = 1;          // 用户ID
-  string currency = 2;         // 用户货币类型
-  int32 total_price = 3;       // 订单总价
-  repeated OrderItem items = 4; // 订单商品项
-  Address address = 5 ;         // 收货地址
-  string extra_info = 6;       // 附加信息
+  int32 total_price = 2;       // 订单总价
+  repeated OrderItem items = 3; // 订单商品项
+  Address address = 4 ;         // 收货地址
+  string extra_info = 5;       // 附加信息
 }
 
 message OrderResult {
@@ -71,5 +71,14 @@ message MarkOrderPaidReq {
 }
 
 message MarkOrderPaidResp {
+  bool success = 1; // 是否成功
+}
+
+message CancelOrderReq{
+   uint64 user_id = 1;       // 用户ID
+   uint64 order_id = 2;      // 订单ID
+}
+
+message CancelOrderResp {
   bool success = 1; // 是否成功
 }

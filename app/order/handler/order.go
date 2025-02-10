@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"Tiktok/app/order/global"
 	"Tiktok/app/order/idl/gen"
 	"Tiktok/app/order/model"
 	"context"
+	"strconv"
 
+	"google.golang.org/grpc/status"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
 )
 
 type OrderService struct {
@@ -61,4 +65,47 @@ func (*OrderService) ListOrder(_ context.Context, req *gen.ListOrderReq) (*gen.L
 	return &rsp,nil
 }
 
+func (*OrderService) PlaceOrder(_ context.Context, req *gen.PlaceOrderReq) (*gen.PlaceOrderResp, error){
+	var rsp gen.PlaceOrderResp
+	var err error
 
+    for _, item := range req.Items {
+        goodsID := strconv.FormatUint(item.ProductsId, 10)
+        productrsp,err := global.ProductsSevClient.GetGoodsDetail(context.Background(), &gen.GoodsDetailRequest{
+            GoodsId: goodsID,
+        })
+
+        if err != nil {
+            zap.S().Errorf("调用查询商品detail服务失败: %v", err)
+            return nil, status.Errorf(codes.Internal, "服务暂不可用")
+        }
+
+        if productrsp == nil  {
+            return nil, status.Errorf(codes.NotFound,"商品 %d 不存在", item.ProductsId)
+        } else if productrsp.TotalCount < item.Quantity {
+            return nil, status.Errorf(
+                codes.ResourceExhausted,
+                "商品 %d 库存不足 (剩余%d，需要%d)",
+                item.ProductsId, productrsp.TotalCount, item.Quantity,
+            )
+        }
+    }
+
+	rsp.Order.OrderId,err = model.CreateOrder(req)
+    if err != nil {
+        return nil, err
+    }
+
+    return &rsp,nil
+}
+
+func CancelOrder(_ context.Context, req *gen.CancelOrderReq) (*gen.CancelOrderResp, error){
+	var rsp gen.CancelOrderResp
+	var err error
+
+    err = model.CancelOrder(uint64(req.OrderId))
+    if err!= nil {
+        rsp.Success = false
+    }
+    return &rsp,nil
+}

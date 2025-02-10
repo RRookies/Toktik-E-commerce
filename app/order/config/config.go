@@ -15,7 +15,7 @@ type MysqlConfig struct {
 type EtcdConfig struct {
     Endpoints   []string `mapstructure:"endpoints" json:"endpoints"` // ETCD集群地址
     DialTimeout int      `mapstructure:"dial-timeout" json:"dial-timeout"` // 连接超时时间（秒）
-    TTL         int      `mapstructure:"ttl" json:"ttl"` // 租约TTL（秒）
+    TTL         int64      `mapstructure:"ttl" json:"ttl"` // 租约TTL（秒）
 }
 
 

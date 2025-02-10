@@ -25,8 +25,8 @@ func InitializeSrv() {
 
 	conn,err := grpc.Dial(serviceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err!= nil {
-		zap.S().Fatal("[InitSrvConn] 连接 【用户服务失败】")
+		zap.S().Fatal("[InitSrvConn] 连接 【商品服务失败】")
 	}
 
-	global.ProductsSevClient = gen.NewProductCatalogServiceClient(conn)
+	global.ProductsSevClient = gen.NewGoodsServiceClient(conn)
 }

@@ -2,7 +2,12 @@ package model
 
 import (
 	"Tiktok/app/order/global"
+	"Tiktok/app/order/idl/gen"
+	"fmt"
 	"time"
+
+	"golang.org/x/exp/rand"
+	"gorm.io/gorm"
 )
 
 type Order struct {
@@ -50,10 +55,90 @@ type OrderItem struct {
 func GetOrderList(Userid int64,Pages, Pagesize int) ([]Order,error){
 	var orderList []Order
 	result := global.DB.Scopes(Paginate(int(Pages), int(Pagesize))).
-	Where(Order{UserID: Userid}).Find(&orderList)
+	Where(Order{UserID: Userid}).Where("is_deleted = ?",0).Find(&orderList)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return orderList,nil
+}
+
+func GenerateOrderSn(userId int32) string {
+	now := time.Now()
+	rand.Seed(uint64(time.Now().UnixNano()))
+	orderSn := fmt.Sprintf("%d%d%d%d%d%d%d",
+		now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(),
+		userId, rand.Intn(90)+10,
+	)
+	return orderSn
+}
+
+func CreateOrder(order *gen.PlaceOrderReq) (uint64, error) {
+	orderNO := GenerateOrderSn(int32(order.UserId))
+
+	newAddress := OrderAddress{
+		ProvinceName: order.Address.ProvinceName,
+		CityName:     order.Address.CityName,
+		RegionName:   order.Address.RegionName,
+		DetailAddress: order.Address.DetailAddress,
+	}
+
+	newOrderItems := make([]OrderItem, len(order.Items))
+	for i, item := range order.Items {
+		newOrderItems[i] = OrderItem{
+			GoodsID:     int64(item.ProductsId),
+			SellingPrice: int(item.ProductsPrice),
+			GoodsCount:   int(item.Quantity),
+		}
+	}
+
+	newOrder := Order{
+		OrderNo:    orderNO,
+		UserID:     int64(order.UserId),
+		TotalPrice: int(order.TotalPrice),
+		Address:    &newAddress,
+		OrderItems: newOrderItems,
+	}
+
+	var orderID uint64
+
+	// Using the transaction to ensure atomicity
+	err := global.DB.Transaction(func(tx *gorm.DB) error {
+		// Create the order first
+		if err := tx.Create(&newOrder).Error; err != nil {
+			return err
+		}
+
+		// Create order items
+		if err := tx.Create(&newOrderItems).Error; err != nil {
+			return err
+		}
+
+		// Set the generated OrderID
+		orderID = uint64(newOrder.OrderID)
+
+		// Create the address (if required by your schema)
+		if err := tx.Create(&newAddress).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	// Return the orderID and any error encountered
+	if err != nil {
+		return 0, err
+	}
+
+	return orderID, nil
+}
+
+
+
+func CancelOrder(orderId uint64) error {
+	result := global.DB.Model(&Order{}).Where("order_id = ?", orderId).Update("is_deleted", 1)
+	if result.Error!= nil {
+		return result.Error
+	}
+	return nil
 }

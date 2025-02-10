@@ -11,5 +11,5 @@ var (
 	DB *gorm.DB
 	EtcdClient   *clientv3.Client
 	ServerConfig config.ServerConfig
-	ProductsSevClient gen.ProductCatalogServiceClient
+	ProductsSevClient gen.GoodsServiceClient
 )

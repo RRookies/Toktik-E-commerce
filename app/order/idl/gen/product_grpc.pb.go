@@ -19,177 +19,181 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductCatalogService_ListProducts_FullMethodName   = "/product.ProductCatalogService/ListProducts"
-	ProductCatalogService_GetProduct_FullMethodName     = "/product.ProductCatalogService/GetProduct"
-	ProductCatalogService_SearchProducts_FullMethodName = "/product.ProductCatalogService/SearchProducts"
+	GoodsService_GetGoodsDetail_FullMethodName   = "/goods.GoodsService/GetGoodsDetail"
+	GoodsService_GetGoodsCategory_FullMethodName = "/goods.GoodsService/GetGoodsCategory"
+	GoodsService_SearchGoods_FullMethodName      = "/goods.GoodsService/SearchGoods"
 )
 
-// ProductCatalogServiceClient is the client API for ProductCatalogService service.
+// GoodsServiceClient is the client API for GoodsService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ProductCatalogServiceClient interface {
-	ListProducts(ctx context.Context, in *ListProductsReq, opts ...grpc.CallOption) (*ListProductsResp, error)
-	GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error)
-	SearchProducts(ctx context.Context, in *SearchProductsReq, opts ...grpc.CallOption) (*SearchProductsResp, error)
+//
+// 商品服务
+type GoodsServiceClient interface {
+	GetGoodsDetail(ctx context.Context, in *GoodsDetailRequest, opts ...grpc.CallOption) (*GoodsDetailResponse, error)
+	GetGoodsCategory(ctx context.Context, in *GoodsCategoryRequest, opts ...grpc.CallOption) (*GoodsCategoryResponse, error)
+	SearchGoods(ctx context.Context, in *GoodsSearchRequest, opts ...grpc.CallOption) (*GoodsSearchResponse, error)
 }
 
-type productCatalogServiceClient struct {
+type goodsServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewProductCatalogServiceClient(cc grpc.ClientConnInterface) ProductCatalogServiceClient {
-	return &productCatalogServiceClient{cc}
+func NewGoodsServiceClient(cc grpc.ClientConnInterface) GoodsServiceClient {
+	return &goodsServiceClient{cc}
 }
 
-func (c *productCatalogServiceClient) ListProducts(ctx context.Context, in *ListProductsReq, opts ...grpc.CallOption) (*ListProductsResp, error) {
+func (c *goodsServiceClient) GetGoodsDetail(ctx context.Context, in *GoodsDetailRequest, opts ...grpc.CallOption) (*GoodsDetailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListProductsResp)
-	err := c.cc.Invoke(ctx, ProductCatalogService_ListProducts_FullMethodName, in, out, cOpts...)
+	out := new(GoodsDetailResponse)
+	err := c.cc.Invoke(ctx, GoodsService_GetGoodsDetail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productCatalogServiceClient) GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error) {
+func (c *goodsServiceClient) GetGoodsCategory(ctx context.Context, in *GoodsCategoryRequest, opts ...grpc.CallOption) (*GoodsCategoryResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetProductResp)
-	err := c.cc.Invoke(ctx, ProductCatalogService_GetProduct_FullMethodName, in, out, cOpts...)
+	out := new(GoodsCategoryResponse)
+	err := c.cc.Invoke(ctx, GoodsService_GetGoodsCategory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productCatalogServiceClient) SearchProducts(ctx context.Context, in *SearchProductsReq, opts ...grpc.CallOption) (*SearchProductsResp, error) {
+func (c *goodsServiceClient) SearchGoods(ctx context.Context, in *GoodsSearchRequest, opts ...grpc.CallOption) (*GoodsSearchResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SearchProductsResp)
-	err := c.cc.Invoke(ctx, ProductCatalogService_SearchProducts_FullMethodName, in, out, cOpts...)
+	out := new(GoodsSearchResponse)
+	err := c.cc.Invoke(ctx, GoodsService_SearchGoods_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ProductCatalogServiceServer is the server API for ProductCatalogService service.
-// All implementations must embed UnimplementedProductCatalogServiceServer
+// GoodsServiceServer is the server API for GoodsService service.
+// All implementations must embed UnimplementedGoodsServiceServer
 // for forward compatibility.
-type ProductCatalogServiceServer interface {
-	ListProducts(context.Context, *ListProductsReq) (*ListProductsResp, error)
-	GetProduct(context.Context, *GetProductReq) (*GetProductResp, error)
-	SearchProducts(context.Context, *SearchProductsReq) (*SearchProductsResp, error)
-	mustEmbedUnimplementedProductCatalogServiceServer()
+//
+// 商品服务
+type GoodsServiceServer interface {
+	GetGoodsDetail(context.Context, *GoodsDetailRequest) (*GoodsDetailResponse, error)
+	GetGoodsCategory(context.Context, *GoodsCategoryRequest) (*GoodsCategoryResponse, error)
+	SearchGoods(context.Context, *GoodsSearchRequest) (*GoodsSearchResponse, error)
+	mustEmbedUnimplementedGoodsServiceServer()
 }
 
-// UnimplementedProductCatalogServiceServer must be embedded to have
+// UnimplementedGoodsServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedProductCatalogServiceServer struct{}
+type UnimplementedGoodsServiceServer struct{}
 
-func (UnimplementedProductCatalogServiceServer) ListProducts(context.Context, *ListProductsReq) (*ListProductsResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListProducts not implemented")
+func (UnimplementedGoodsServiceServer) GetGoodsDetail(context.Context, *GoodsDetailRequest) (*GoodsDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsDetail not implemented")
 }
-func (UnimplementedProductCatalogServiceServer) GetProduct(context.Context, *GetProductReq) (*GetProductResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+func (UnimplementedGoodsServiceServer) GetGoodsCategory(context.Context, *GoodsCategoryRequest) (*GoodsCategoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoodsCategory not implemented")
 }
-func (UnimplementedProductCatalogServiceServer) SearchProducts(context.Context, *SearchProductsReq) (*SearchProductsResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SearchProducts not implemented")
+func (UnimplementedGoodsServiceServer) SearchGoods(context.Context, *GoodsSearchRequest) (*GoodsSearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchGoods not implemented")
 }
-func (UnimplementedProductCatalogServiceServer) mustEmbedUnimplementedProductCatalogServiceServer() {}
-func (UnimplementedProductCatalogServiceServer) testEmbeddedByValue()                               {}
+func (UnimplementedGoodsServiceServer) mustEmbedUnimplementedGoodsServiceServer() {}
+func (UnimplementedGoodsServiceServer) testEmbeddedByValue()                      {}
 
-// UnsafeProductCatalogServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ProductCatalogServiceServer will
+// UnsafeGoodsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GoodsServiceServer will
 // result in compilation errors.
-type UnsafeProductCatalogServiceServer interface {
-	mustEmbedUnimplementedProductCatalogServiceServer()
+type UnsafeGoodsServiceServer interface {
+	mustEmbedUnimplementedGoodsServiceServer()
 }
 
-func RegisterProductCatalogServiceServer(s grpc.ServiceRegistrar, srv ProductCatalogServiceServer) {
-	// If the following call pancis, it indicates UnimplementedProductCatalogServiceServer was
+func RegisterGoodsServiceServer(s grpc.ServiceRegistrar, srv GoodsServiceServer) {
+	// If the following call pancis, it indicates UnimplementedGoodsServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ProductCatalogService_ServiceDesc, srv)
+	s.RegisterService(&GoodsService_ServiceDesc, srv)
 }
 
-func _ProductCatalogService_ListProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListProductsReq)
+func _GoodsService_GetGoodsDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsDetailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductCatalogServiceServer).ListProducts(ctx, in)
+		return srv.(GoodsServiceServer).GetGoodsDetail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductCatalogService_ListProducts_FullMethodName,
+		FullMethod: GoodsService_GetGoodsDetail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductCatalogServiceServer).ListProducts(ctx, req.(*ListProductsReq))
+		return srv.(GoodsServiceServer).GetGoodsDetail(ctx, req.(*GoodsDetailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductCatalogService_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetProductReq)
+func _GoodsService_GetGoodsCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductCatalogServiceServer).GetProduct(ctx, in)
+		return srv.(GoodsServiceServer).GetGoodsCategory(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductCatalogService_GetProduct_FullMethodName,
+		FullMethod: GoodsService_GetGoodsCategory_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductCatalogServiceServer).GetProduct(ctx, req.(*GetProductReq))
+		return srv.(GoodsServiceServer).GetGoodsCategory(ctx, req.(*GoodsCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductCatalogService_SearchProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchProductsReq)
+func _GoodsService_SearchGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoodsSearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductCatalogServiceServer).SearchProducts(ctx, in)
+		return srv.(GoodsServiceServer).SearchGoods(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductCatalogService_SearchProducts_FullMethodName,
+		FullMethod: GoodsService_SearchGoods_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductCatalogServiceServer).SearchProducts(ctx, req.(*SearchProductsReq))
+		return srv.(GoodsServiceServer).SearchGoods(ctx, req.(*GoodsSearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ProductCatalogService_ServiceDesc is the grpc.ServiceDesc for ProductCatalogService service.
+// GoodsService_ServiceDesc is the grpc.ServiceDesc for GoodsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ProductCatalogService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "product.ProductCatalogService",
-	HandlerType: (*ProductCatalogServiceServer)(nil),
+var GoodsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "goods.GoodsService",
+	HandlerType: (*GoodsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListProducts",
-			Handler:    _ProductCatalogService_ListProducts_Handler,
+			MethodName: "GetGoodsDetail",
+			Handler:    _GoodsService_GetGoodsDetail_Handler,
 		},
 		{
-			MethodName: "GetProduct",
-			Handler:    _ProductCatalogService_GetProduct_Handler,
+			MethodName: "GetGoodsCategory",
+			Handler:    _GoodsService_GetGoodsCategory_Handler,
 		},
 		{
-			MethodName: "SearchProducts",
-			Handler:    _ProductCatalogService_SearchProducts_Handler,
+			MethodName: "SearchGoods",
+			Handler:    _GoodsService_SearchGoods_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1,48 +1,52 @@
 syntax = "proto3";
 
-package product;
+package goods;
 
 option go_package = "./gen";
 
-service ProductCatalogService {
-  rpc ListProducts(ListProductsReq) returns (ListProductsResp) {}
-  rpc GetProduct(GetProductReq) returns (GetProductResp) {}
-  rpc SearchProducts(SearchProductsReq) returns (SearchProductsResp) {}
+import "google/protobuf/timestamp.proto";
+
+// 商品服务
+service GoodsService {
+    rpc GetGoodsDetail(GoodsDetailRequest) returns (GoodsDetailResponse);
+    rpc GetGoodsCategory(GoodsCategoryRequest) returns (GoodsCategoryResponse);
+    rpc SearchGoods(GoodsSearchRequest) returns (GoodsSearchResponse);
 }
 
-message ListProductsReq{
-  int32 page = 1;
-  int64 pageSize = 2;
-
-  string categoryName = 3;
+// 商品信息
+message GoodsDetailRequest {
+    string goods_id = 1; // 商品ID
 }
 
-message Product {
-  uint32 id = 1;
-  string name = 2;
-  string description = 3;
-  string picture = 4;
-  float price = 5;
-
-  repeated string categories = 6;
+message GoodsDetailResponse {
+    string goods_id = 1; // 商品ID
+    string name = 2; // 商品名称
+    string description = 3; // 商品描述
+    float price = 4; // 商品价格
+    string image_url = 5; // 商品图片URL
+    google.protobuf.Timestamp create_time = 6; // 商品创建时间
+    int32 total_count = 7;
 }
 
-message ListProductsResp {
-  repeated Product products = 1;
+// 商品分类信息
+message GoodsCategoryRequest {
+    string category_id = 1; // 分类ID
+    int32 page = 2; // 当前页
+    int32 page_size = 3; // 每页数量
 }
 
-message GetProductReq {
-  uint32 id = 1;
+message GoodsCategoryResponse {
+    string category_id = 1; // 分类ID
+    string category_name = 2; // 分类名称
+    repeated string goods_ids = 3; // 该分类下的商品ID列表
 }
 
-message GetProductResp {
-  Product product = 1;
+// 商品搜索信息
+message GoodsSearchRequest {
+    string goods_name = 1; // 搜索关键字
 }
 
-message SearchProductsReq {
-  string query = 1;
-}
-
-message SearchProductsResp {
-  repeated Product results = 1;
+message GoodsSearchResponse {
+    repeated GoodsDetailResponse goods = 1; // 商品列表
+    int32 total_count = 2; // 总商品数量
 }
