@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package goods;
+
+option go_package = "/goods";
+
+import "google/protobuf/timestamp.proto";
+
+// 商品服务
+service GoodsService {
+    rpc GetGoodsDetail(GoodsDetailRequest) returns (GoodsDetailResponse);
+    rpc GetGoodsCategory(GoodsCategoryRequest) returns (GoodsCategoryResponse);
+    rpc SearchGoods(GoodsSearchRequest) returns (GoodsSearchResponse);
+}
+
+// 商品信息
+message GoodsDetailRequest {
+    string goods_id = 1; // 商品ID
+}
+
+message GoodsDetailResponse {
+    string goods_id = 1; // 商品ID
+    string name = 2; // 商品名称
+    string description = 3; // 商品描述
+    float price = 4; // 商品价格
+    string image_url = 5; // 商品图片URL
+    google.protobuf.Timestamp create_time = 6; // 商品创建时间
+    int32 total_count = 7; // 商品总数量
+}
+
+// 商品分类信息
+message GoodsCategoryRequest {
+    string category_id = 1; // 分类ID
+    int32 page = 2; // 当前页
+    int32 page_size = 3; // 每页数量
+}
+
+message GoodsCategoryResponse {
+    string category_id = 1; // 分类ID
+    string category_name = 2; // 分类名称
+    repeated string goods_ids = 3; // 该分类下的商品ID列表
+}
+
+// 商品搜索信息
+message GoodsSearchRequest {
+    string goods_name = 1; // 搜索关键字
+}
+
+message GoodsSearchResponse {
+    repeated GoodsDetailResponse goods = 1; // 商品列表
+    int32 total_count = 2; // 总商品数量
+}
+
+
