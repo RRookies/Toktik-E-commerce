@@ -2,9 +2,7 @@ syntax = "proto3";
 
 package order;
 
-
-
-option go_package = "order";
+option go_package = "./gen";
 
 service OrderService {
   rpc PlaceOrder(PlaceOrderReq) returns (PlaceOrderResp) {}
@@ -13,62 +11,65 @@ service OrderService {
 }
 
 message Address {
-  string street_address = 1;
-  string city = 2;
-  string state = 3;
-  string country = 4;
-  int32 zip_code = 5;
+  string province_name = 1 ;   // 省份
+  string city_name = 2;       // 城市
+  string region_name = 3;     // 区域
+  string detail_address = 4;  // 详细地址
+}
+
+message OrderItem {
+  uint64 products_id = 1;        // 商品ID
+  int32 quantity = 2;         // 商品数量
+  int32 products_price = 3;     
 }
 
 message PlaceOrderReq {
-  uint32 user_id = 1;
-  string user_currency = 2;
-
-  Address address = 3;
-  string email = 4;
-  repeated OrderItem order_items = 5;
-}
-
-message CartItem {
-  uint32 product_id = 1;
-  int32  quantity = 2;
-}
-
-
-message OrderItem {
-  CartItem item = 1;
-  float cost = 2;
+  uint64 user_id = 1;          // 用户ID
+  string currency = 2;         // 用户货币类型
+  int32 total_price = 3;       // 订单总价
+  repeated OrderItem items = 4; // 订单商品项
+  Address address = 5 ;         // 收货地址
+  string extra_info = 6;       // 附加信息
 }
 
 message OrderResult {
-  string order_id = 1;
+  uint64 order_id = 1; // 订单ID
 }
 
 message PlaceOrderResp {
-  OrderResult order = 1;
+  OrderResult order = 1; // 订单结果
 }
 
 message ListOrderReq {
-  uint32 user_id = 1;
+  uint64 user_id = 1; // 用户ID
+  int32  pages = 2;
+  int32 pagesize = 3;
 }
 
 message Order {
-  repeated OrderItem order_items = 1;
-  string order_id = 2;
-  uint32 user_id = 3;
-  string user_currency = 4;
-  Address address = 5;
-  string email = 6;
-  int32 created_at = 7;
+  uint64 order_id = 1;         // 订单ID
+  string order_no = 2;         // 订单编号
+  uint64 user_id = 3;          // 用户ID
+  int32 total_price = 4;       // 总价
+  int32 pay_status = 5;        // 支付状态
+  int32 pay_type = 6;          // 支付方式
+  string pay_time = 7;         // 支付时间
+  int32 order_status = 8;      // 订单状态
+  string extra_info = 9;       // 附加信息
+  bool is_deleted = 10;        // 是否删除
+  Address address = 11;        // 收货地址
+  repeated OrderItem order_items = 12; // 订单商品项
 }
 
 message ListOrderResp {
-  repeated Order orders = 1;
+  repeated Order orders = 1; // 订单列表
 }
 
 message MarkOrderPaidReq {
-  uint32 user_id = 1;
-  string order_id = 2;
+  uint64 user_id = 1;       // 用户ID
+  uint64 order_id = 2;      // 订单ID
 }
 
-message MarkOrderPaidResp {}
+message MarkOrderPaidResp {
+  bool success = 1; // 是否成功
+}

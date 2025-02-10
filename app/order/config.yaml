@@ -1,0 +1,17 @@
+name: order-service
+
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  db: order_db
+  user: root
+  password: password123
+
+etcd:
+  endpoints:
+    - 127.0.0.1:2379
+  dial-timeout: 3
+  ttl: 10
+
+products_srv:
+  name: products-service
